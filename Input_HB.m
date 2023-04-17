@@ -1,107 +1,50 @@
 clear
-t1=clock;                 %¼ÇÂ¼.m³ÌÐò¿ªÊ¼¼ÆËãµÄÆðÊ¼Ê±¼ä
-load('Initial.mat');      %»ù´¡Êý¾Ý
-load('Changsha.mat');     %ÆøÏóÊý¾Ý
-% [Deday,EtYT,EtbYT,EtdYT,EtrYT,SNH]=designday1(E,N,TD,year1,year2);
-sample=1;            %±íÊ¾Òª¼ÆËã500¸ö²»Í¬µÄ·¿¼ä¸ººÉ£¬Ã¿¸ö·¿¼äµÄÌØÕ÷²ÎÊý¶¼ÓÐËù²»Í¬£¬
-[sampletype]=sample_type(sample);  %Ëæ»úÈ¡Êý¾ØÕó£¬Éú³É500*12µÄ¾ØÕó
+t1=clock;                 %è®°å½•.mç¨‹åºå¼€å§‹è®¡ç®—çš„èµ·å§‹æ—¶é—´
+load('Initial.mat');      %åŠ è½½åŸºç¡€æ•°æ®
+load('Changsha.mat');     %åŠ è½½æ°”è±¡æ•°æ®
+sample=1;                 %è¡¨ç¤ºè¦è®¡ç®—500ä¸ªä¸åŒçš„æˆ¿é—´è´Ÿè·ï¼Œæ¯ä¸ªæˆ¿é—´çš„ç‰¹å¾å‚æ•°éƒ½æœ‰æ‰€ä¸åŒï¼Œ
+[sampletype]=sample_type(sample);  %éšæœºå–æ•°çŸ©é˜µï¼Œç”Ÿæˆ500*12çš„çŸ©é˜µ
 PA=2;
 LRE=0.05;
 KY=0.5;
-%{  
-20221114×¢ÊÍµô
-load_er0=zeros(1,8);   %¸ººÉ²îÒìÂÊ£¬ÏÈÉè¶¨ÎªÁã¾ØÕó£¬·½±ãºóÃæ´æ´¢Êý¾Ý
-load_er1=zeros(1,8);
-load_er2=zeros(1,8);
-load_er3=zeros(1,8);
-load_RTS1=zeros(1,8);
-load_RTS2=zeros(1,8);
-load_RTS3=zeros(1,8);
-%} 
 load_HB1=zeros(1,8);
 load_HB2=zeros(1,8);
 load_HB3=zeros(1,8);
 urRTS=zeros(sample,24);
-%{
-½«¾ØÕó°´ÁÐ²ð·Ö£¬½«simpletypeÕâ¸ö500*11µÄ¾ØÕó²ð³É4¸öÐ¡¾ØÕó£¬
-·Ö±ðÊÇcons1ÊÇ500*5ÁÐ£¬SHGC0ÊÇ500*1ÁÐ£¬glazingratioÊÇ500*1ÁÐ£¬
-cons2ÊÇ500*4ÁÐ
-%}
-for hh=1:sample                     %¶ÔÖ¸¶¨µÄ·¿¼äÊýÁ¿½øÐÐÑ­»·È¡Êý¼ÆËã£¬
-cons1=sampletype(hh,1:5);           %cons1±íÊ¾½¨ÖþÌØÕ÷
-SHGC0=sampletype(hh,6);             %´°»§´¹Ö±ÈëÉäÊ±µÄÌ«ÑôµÃÈÈÏµÊý
-glazingratio=sampletype(hh,7);      %´°Ç½±È
+for hh=1:sample                     %å¯¹æŒ‡å®šçš„æˆ¿é—´æ•°é‡è¿›è¡Œå¾ªçŽ¯å–æ•°è®¡ç®—ï¼Œ
+cons1=sampletype(hh,1:5);           %cons1è¡¨ç¤ºå»ºç­‘ç‰¹å¾
+SHGC0=sampletype(hh,6);             %çª—æˆ·åž‚ç›´å…¥å°„æ—¶çš„å¤ªé˜³å¾—çƒ­ç³»æ•°
+glazingratio=sampletype(hh,7);      %çª—å¢™æ¯”
 cons2=sampletype(hh,8:11);
-% m=simpletype(hh,8);                 %»»ÆøÏµÊý£¬¶¨ÒåÎªÃ¿Ð¡Ê±»»ÆøÁ¿ÓëÍâÎ§»¤½á¹¹Ãæ»ýµÄ±ÈÖµÖ®Ç°Îª10
-% IAC=simpletype(hh,9);               %ÄÚÕÚÑôÏµÊý£¬1±íÊ¾ÎÞÄÚÕÚÑô
-% outratio=simpletype(hh,10);          %Î§»¤½á¹¹Íâ±íÃæÎüÊÕÂÊ
-% radratio=simpletype(hh,11);          %ÊÒÄÚ·øÉäµÃÈÈÖÐÒÔ·øÉäÐÎÊ½×ª»¯ÎªÊÒÄÚ¸ººÉµÄ²¿·ÖÕ¼×Ü·øÉäµÃÈÈµÄ±ÈÀý£¬ÆäÓà²¿·ÖÎªÒÔ¶ÔÁ÷»»ÈÈ£¨·Ç·øÉäÐÎÊ½£©×ª»¯ÎªÊÒÄÚ¸ººÉ£¬¶þÕßÊÊÓÃµÄ·øÉäÊ±¼äÐòÁÐ²»Í¬
-Tr=26;  %ÊÒÄÚÉè¼ÆÎÂ¶È£¬È¡24£¬25£¬26£¬27£¬28Õâ¼¸¸ö
-%type=randnumber1(i,11);              %2;  %ÊÒÄÚ²¼ÖÃÀàÐÍ£¬È¡ÖµÎª1£¬2£¬3¡£·Ö±ð´ú±íÇáÐÍ£¨¼òµ¥²¼ÖÃ£©£¬ÖÐÐÍ£¨ÖÐµÈ²¼ÖÃ£©£¬ÖØÐÍ²¼ÖÃ£¨¸ºÔð²¼ÖÃ£©¡£ÓëÊÒÄÚ²¼ÖÃµÄ²ÄÖÊÒÔ¼°ÎüÊÕÃæµÄÊýÁ¿¡¢Ãæ»ýÓÐ¹Ø£¬¹ØÏµµ½·øÉäÊ±¼äÐòÁÐµÄÑ¡Ôñ
-Rr=R0(sampletype(hh,12),:);            %R0(1,:),µÚ12ÁÐ; %´°»§ÐÔÖÊÀàÐÍ£¬Óë¸÷½Ç¶ÈµÄSGHC¸úSHGC0µÄ±ÈÖµÓÐ¹Ø£¬¿ÉÒÔ¸ù¾Ý³õ·ÖµÄ¾ÅÀà´ÓR0ÖÐÑ¡È¡£¬Ò²¿É×Ô¼ºÉèÖÃ£¬Îª1X6µÄÊý×é
-% 20221114×¢ÊÍµôÏÂÃæQPRÕâ1ÐÐ
-% QPR=3;  %È¡µÚÈýÖÖ¼ÆËã·½Ê½
-% [ur]=RTS(cons1,glazingratio,wall_type,window_type,iwall_type,floor_type,ceiling_type);
-% urRTS(hh,:)=ur(:,1)';
-% 20221114×¢ÊÍµôÏÂÃæ[load]Õâ1ÐÐ
-%[load]=major_PRF(N,E,TZ,year1,year2,cons1,SHGC0,Rr,glazingratio,cons2,Tr,ASHRAEWET,B_D,TD,QPR,wall_type,window_type,iwall_type,floor_type,ceiling_type);   
+Tr=26;  %å®¤å†…è®¾è®¡æ¸©åº¦ï¼Œå–24ï¼Œ25ï¼Œ26ï¼Œ27ï¼Œ28è¿™å‡ ä¸ª
+Rr=R0(sampletype(hh,12),:);            %R0(1,:),ç¬¬12åˆ—; %çª—æˆ·æ€§è´¨ç±»åž‹ï¼Œä¸Žå„è§’åº¦çš„SGHCè·ŸSHGC0çš„æ¯”å€¼æœ‰å…³ï¼Œå¯ä»¥æ ¹æ®åˆåˆ†çš„ä¹ç±»ä»ŽR0ä¸­é€‰å–ï¼Œä¹Ÿå¯è‡ªå·±è®¾ç½®ï¼Œä¸º1X6çš„æ•°ç»„ 
 [load1]=HB_main(N,E,TZ,year1,year2,cons1,SHGC0,Rr,glazingratio,cons2,Tr,ASHRAEWET,TD,wall_type,window_type,iwall_type,floor_type,ceiling_type);
-%½«·øÉäÊ±¼äÐòÁÐ·¨¼ÆËã³öÀ´µÄÀä¸ººÉ½øÐÐÓÉ´óµ½Ð¡µÄ½µÐòÅÅÁÐ£¬²¢¸´ÖÆ¸ø¾ØÕóaa
-%20221114×¢ÊÍµô[aa,~]Õâ1ÐÐ
-%[aa,~]=sort(load,'descend');
-%½«ÈÈÆ½ºâ·¨¼ÆËã³öÀ´µÄÀä¸ººÉ½øÐÐÓÉ´óµ½Ð¡µÄ½µÐòÅÅÁÐ£¬²¢¸´ÖÆ¸ø¾ØÕóbb
 [bb,~]=sort(load1,'descend');
 maxx1=round(0.004*size(TD,1)+1);
 maxx2=round(0.01*size(TD,1)+1);
 maxx3=round(0.02*size(TD,1)+1);
 %%
-for h=1:8    %hÊÇÖ¸8¸ö³¯Ïò;OrientationÒ²¿ÉÒÔ
-    %{
-    load_er0(hh,h)=(aa(1,h)-bb(1,h))/bb(1,h);%·åÖµ¸ººÉ²îÒìÂÊ
-    load_er1(hh,h)=(aa(maxx1,h)-bb(maxx1,h))/bb(maxx1,h);%¸ººÉ²»±£Ö¤0.4%Éè¼Æ¸ººÉ²îÒìÂÊ
-    load_er2(hh,h)=(aa(maxx2,h)-bb(maxx2,h))/bb(maxx2,h);%¸ººÉ²»±£Ö¤1%Éè¼Æ¸ººÉ²îÒìÂÊ
-    load_er3(hh,h)=(aa(maxx3,h)-bb(maxx3,h))/bb(maxx3,h);%¸ººÉ²»±£Ö¤2%Éè¼Æ¸ººÉ²îÒìÂÊ
-    load_RTS1(hh,h)=aa(maxx1,h);             %·øÉäÊ±¼äÐòÁÐ·¨¼ÆËã²»±£Ö¤ÂÊÎª0.4%Ê±µÄÉè¼Æ¸ººÉ
-    load_RTS2(hh,h)=aa(maxx2,h);             %·øÉäÊ±¼äÐòÁÐ·¨¼ÆËã²»±£Ö¤ÂÊÎª1%Ê±µÄÉè¼Æ¸ººÉ
-    load_RTS3(hh,h)=aa(maxx3,h);             %·øÉäÊ±¼äÐòÁÐ·¨¼ÆËã²»±£Ö¤ÂÊÎª2%Ê±µÄÉè¼Æ¸ººÉ
-   %}
-    load_HB1(hh,h)=bb(maxx1,h);              %ÈÈÆ½ºâ·¨¼ÆËã²»±£Ö¤ÂÊÎª0.4%Ê±µÄÉè¼Æ¸ººÉ
-    load_HB2(hh,h)=bb(maxx2,h);              %ÈÈÆ½ºâ·¨¼ÆËã²»±£Ö¤ÂÊÎª1%Ê±µÄÉè¼Æ¸ººÉ
-    load_HB3(hh,h)=bb(maxx3,h);              %ÈÈÆ½ºâ·¨¼ÆËã²»±£Ö¤ÂÊÎª2%Ê±µÄÉè¼Æ¸ººÉ
+for h=1:8    %hæ˜¯æŒ‡8ä¸ªæœå‘;Orientationä¹Ÿå¯ä»¥
+    load_HB1(hh,h)=bb(maxx1,h);              %çƒ­å¹³è¡¡æ³•è®¡ç®—ä¸ä¿è¯çŽ‡ä¸º0.4%æ—¶çš„è®¾è®¡è´Ÿè·
+    load_HB2(hh,h)=bb(maxx2,h);              %çƒ­å¹³è¡¡æ³•è®¡ç®—ä¸ä¿è¯çŽ‡ä¸º1%æ—¶çš„è®¾è®¡è´Ÿè·
+    load_HB3(hh,h)=bb(maxx3,h);              %çƒ­å¹³è¡¡æ³•è®¡ç®—ä¸ä¿è¯çŽ‡ä¸º2%æ—¶çš„è®¾è®¡è´Ÿè·
 end
 end
-%[bb,~]=display(load1,'descend');%ZOU²âÊÔÓÃµÄ¡ª¡ª20221114
-t2=clock;             %¼ÇÂ¼.m³ÌÐò½áÊø¼ÆËãµÄÖÕÖ¹Ê±¼ä
-TIME=etime(t2,t1);    %t2Óët1µÄ¼ä²î£¬¼ÇÂ¼.m³ÌÐòÔËÐÐ»¨·ÑÁË¶à³¤Ê±¼ä
-% clearvars -except weatherdata TIME load   %Çå³ý³ýÁËweatherdataÒÔÍâµÄÊý¾Ý
+t2=clock;             %è®°å½•.mç¨‹åºç»“æŸè®¡ç®—çš„ç»ˆæ­¢æ—¶é—´
+TIME=etime(t2,t1);    %t2ä¸Žt1çš„é—´å·®ï¼Œè®°å½•.mç¨‹åºè¿è¡ŒèŠ±è´¹äº†å¤šé•¿æ—¶é—´
+% clearvars -except weatherdata TIME load   %æ¸…é™¤é™¤äº†weatherdataä»¥å¤–çš„æ•°æ®
 
-%×¢1£ºweatherdataµÄ1ÖÁ8ÁÐ·Ö±ð´ú±í±±£¨N£©£¬¶«±±£¨NE£©£¬¶«£¨E£©£¬¶«ÄÏ£¨SE£©£¬ÄÏ£¨S£©£¬Î÷ÄÏ£¨SW£©£¬Î÷£¨W£©ºÍÎ÷±±£¨NW£©µÄÍ¬Ê±·¢ÉúÆøÏóÊý¾Ý
+%æ³¨1ï¼šweatherdataçš„1è‡³8åˆ—åˆ†åˆ«ä»£è¡¨åŒ—ï¼ˆNï¼‰ï¼Œä¸œåŒ—ï¼ˆNEï¼‰ï¼Œä¸œï¼ˆEï¼‰ï¼Œä¸œå—ï¼ˆSEï¼‰ï¼Œå—ï¼ˆSï¼‰ï¼Œè¥¿å—ï¼ˆSWï¼‰ï¼Œè¥¿ï¼ˆWï¼‰å’Œè¥¿åŒ—ï¼ˆNWï¼‰çš„åŒæ—¶å‘ç”Ÿæ°”è±¡æ•°æ®
 
-%×¢2£ºÃ¿Ò»¸ö³¯ÏòµÄÊý¾ÝÖÐ£¬µÚÒ»ÐÐµÄ1-4ÁÐ·Ö±ð´ú±íÄêÔÂÈÕÒÔ¼°×î´ó¸ººÉÊ±¿Ì£¬3-26ÐÐÎªÉú³ÉµÄÍ¬Ê±·¢ÉúÆøÏóÊý¾Ý£¬ÆäÖÐ
-            %µÚÒ»ÁÐ£º¸ÉÇòÎÂ¶È£¨¡æ£©
-            %µÚ¶þÁÐ£ºÊªÇòÎÂ¶È£¨¡æ£©
-            %µÚÈýÁÐ£ºË®Æ½Ãæ×Ü·øÉä£¨W/©O£©
-            %µÚËÄÁÐ£ºÁ¢ÃæÖ±Éä·øÉä£¨W/©O£©
-            %µÚÎåÁÐ£ºÁ¢ÃæÉ¢Éä·øÉä£¨W/©O£©
-            %µÚÁùÁÐ£ºµØÃæ·´Éä·øÉä£¨W/©O£©
-            %µÚÆßÁÐ£ºÁ¢Ãæ×Ü·øÉä£¨W/©O£©
-            %µÚ°ËÁÐ£ºÍâÎ§»¤½á¹¹µ¼ÖÂµÄÊÒÄÚ¸ººÉ£¨µ¥Î»£ºWÃ¿Æ½·½Ã×ÍâÎ§»¤½á¹¹Ãæ»ý£¬×¢Òâ²¢·Ç·¿¼äÃæ»ý£©
-            %µÚ¾ÅÁÐ£º¿ÕÆø½»»»µ¼ÖÂµÄÊÒÄÚ¸ººÉ£¨µ¥Î»£ºÍ¬ÉÏ£©
-            %µÚÊ®ÁÐ£ºÌ«Ñô·øÉäµ¼ÖÂµÄÊÒÄÚ¸ººÉ£¨µ¥Î»£ºÍ¬ÉÏ£©
-            %µÚÊ®Ò»ÁÐ£ºÊÒÄÚ×Ü¸ººÉ£¨µ¥Î»£ºÍ¬ÉÏ£©
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',{'±±','¶«±±','¶«','¶«ÄÏ','ÄÏ','Î÷ÄÏ','Î÷','Î÷±±'},'sheet1','A1');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',{'±±','¶«±±','¶«','¶«ÄÏ','ÄÏ','Î÷ÄÏ','Î÷','Î÷±±'},'sheet2','A1');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',{'±±','¶«±±','¶«','¶«ÄÏ','ÄÏ','Î÷ÄÏ','Î÷','Î÷±±'},'sheet3','A1');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',{'±±','¶«±±','¶«','¶«ÄÏ','ÄÏ','Î÷ÄÏ','Î÷','Î÷±±'},'sheet4','A1');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',load_er0,'sheet1','A2');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',load_er1,'sheet2','A2');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',load_er2,'sheet3','A2');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR3.xlsx',load_er3,'sheet4','A2');
-% outputfilename='D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\ER_QPR1.xlsx';  % the folder should be modified
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\simpletype.xlsx',{'ÍâÇ½','ÄÚÇ½','´°»§','µØ°å','Ìì»¨°å','SHGCO','´°Ç½±È','ÐÂ·çÏµÊý','ÄÚÕÚÑôÏµÊý','Íâ±íÃæÎüÊÕÂÊ','·øÉä±È','Ì«ÑôµÃÈÈÏµÊý'},'sheet1','A1');
-% xlswrite('D:\ÑÐ¶þ\³ÌÐòÊÔÑé\µ¼³öÎÄ¼þ\simpletype.xlsx',simpletype,'sheet1','A2');
-%Ä¿µÄ£»±È½ÏÈÈÆ½ºâ·¨Óë·øÉäÊ±¼äÐòÁÐ·¨¼ÆËã³öÀ´µÄ·åÖµÀä¸ººÉ£¬²»±£Ö¤Éè¼ÆÀä¸ººÉµÄÆ«²îÓÐ¶à´ó£»½ø¶ø±È½ÏÕâÁ½ÖÖ·½·¨Éú³ÉµÄÍ¬Ê±·¢ÉúÆøÏó²ÎÊý£¿£¨×Ô¼ºµÄÀí½â£©
-%Ê±¼ä£º20220920
-%µØµã£º³ý³¾Â¥
-
-
+%æ³¨2ï¼šæ¯ä¸€ä¸ªæœå‘çš„æ•°æ®ä¸­ï¼Œç¬¬ä¸€è¡Œçš„1-4åˆ—åˆ†åˆ«ä»£è¡¨å¹´æœˆæ—¥ä»¥åŠæœ€å¤§è´Ÿè·æ—¶åˆ»ï¼Œ3-26è¡Œä¸ºç”Ÿæˆçš„åŒæ—¶å‘ç”Ÿæ°”è±¡æ•°æ®ï¼Œå…¶ä¸­
+            %ç¬¬ä¸€åˆ—ï¼šå¹²çƒæ¸©åº¦ï¼ˆâ„ƒï¼‰
+            %ç¬¬äºŒåˆ—ï¼šæ¹¿çƒæ¸©åº¦ï¼ˆâ„ƒï¼‰
+            %ç¬¬ä¸‰åˆ—ï¼šæ°´å¹³é¢æ€»è¾å°„ï¼ˆW/ãŽ¡ï¼‰
+            %ç¬¬å››åˆ—ï¼šç«‹é¢ç›´å°„è¾å°„ï¼ˆW/ãŽ¡ï¼‰
+            %ç¬¬äº”åˆ—ï¼šç«‹é¢æ•£å°„è¾å°„ï¼ˆW/ãŽ¡ï¼‰
+            %ç¬¬å…­åˆ—ï¼šåœ°é¢åå°„è¾å°„ï¼ˆW/ãŽ¡ï¼‰
+            %ç¬¬ä¸ƒåˆ—ï¼šç«‹é¢æ€»è¾å°„ï¼ˆW/ãŽ¡ï¼‰
+            %ç¬¬å…«åˆ—ï¼šå¤–å›´æŠ¤ç»“æž„å¯¼è‡´çš„å®¤å†…è´Ÿè·ï¼ˆå•ä½ï¼šWæ¯å¹³æ–¹ç±³å¤–å›´æŠ¤ç»“æž„é¢ç§¯ï¼Œæ³¨æ„å¹¶éžæˆ¿é—´é¢ç§¯ï¼‰
+            %ç¬¬ä¹åˆ—ï¼šç©ºæ°”äº¤æ¢å¯¼è‡´çš„å®¤å†…è´Ÿè·ï¼ˆå•ä½ï¼šåŒä¸Šï¼‰
+            %ç¬¬ååˆ—ï¼šå¤ªé˜³è¾å°„å¯¼è‡´çš„å®¤å†…è´Ÿè·ï¼ˆå•ä½ï¼šåŒä¸Šï¼‰
+            %ç¬¬åä¸€åˆ—ï¼šå®¤å†…æ€»è´Ÿè·ï¼ˆå•ä½ï¼šåŒä¸Šï¼‰
